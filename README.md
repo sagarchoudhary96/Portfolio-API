@@ -2,6 +2,12 @@
 A portfolio tracking API which allows adding/deleting/updating trades and can do basic return calculations etc.
 The API is live [here](https://sheltered-cliffs-65361.herokuapp.com/).
 
+## How To Run:
+   * [Clone](https://github.com/sagarchoudhary96/Portfolio-API.git) or [Download](https://github.com/sagarchoudhary96/Portfolio-API/archive/master.zip) the Repository.
+   * Make sure to replace `DB_URL_HERE` in `config/db.js` file with the url of your database.
+   * Install the dependencies using `npm install`.
+   * run the server using `npm run dev`.
+
 ## The following endpoints are available:
 
     * GET /portfolio
