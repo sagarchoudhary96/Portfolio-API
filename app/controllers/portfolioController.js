@@ -41,7 +41,6 @@ const formatDate = (date) => {
 //get whole portfolio
 exports.getPortfolio = (req, res) => {
   Portfolio.find({}).select({'__v': 0}).populate('trades').exec().then((result) => {
-    console.log('here')
     if (!result || result.length === 0) {
       res.status(404).send({
         success: false,
