@@ -1,5 +1,5 @@
 // protfolio base route
-const baseRoute =  '/portfolio/'
+const baseRoute = '/portfolio/'
 
 //controller for portfolio
 const portfolio = require('../controllers/portfolioController')

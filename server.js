@@ -6,15 +6,14 @@ const bodyParser = require('body-parser')
 // db config
 const dbConfig = require('./config/db')
 mongoose.Promise = global.Promise
-
+mongoose.set('useFindAndModify', false)
 const app = express()
 
 // Port to run the server
 var port = process.env.PORT || 8000
 
 // parser to parse url-encoded forms
-app.use(bodyParser.urlencoded({ extended: true }))
-
+app.use(bodyParser.urlencoded({extended: true}))
 
 // help docs
 app.get('/', (req, res) => {
@@ -50,7 +49,7 @@ app.get('/', (req, res) => {
         USAGE:
           Update the specific Trade
         PARAMS:
-          the values to be updated from (stockId, date, price, quantity, type)
+          the values to be updated from (date, price, quantity, type)
 
     * POST /portfolio/removeTrade/:id
       USAGE:
@@ -65,16 +64,16 @@ require('./app/routes')(app)
 
 // Connecting to the database
 mongoose.connect(dbConfig.url, {
-    useNewUrlParser: true,
-    useCreateIndex: true
+  useNewUrlParser: true,
+  useCreateIndex: true
 }).then(() => {
-    console.log("Successfully connected to the database");
+  console.log("Successfully connected to the database");
 
-    // Run the server
-    app.listen(port, () => {
-      console.log("Listening on Port: " + port)
-    })
+  // Run the server
+  app.listen(port, () => {
+    console.log("Listening on Port: " + port)
+  })
 }).catch(err => {
-    console.log('Could not connect to the database. Exiting now...', err);
-    process.exit();
+  console.log('Could not connect to the database. Exiting now...', err);
+  process.exit();
 });
