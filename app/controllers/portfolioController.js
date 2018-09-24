@@ -29,9 +29,11 @@ const addStock = (data) => {
         //create new entry for portfolio based on trade type
         let buyQuantity = 0
         let leftQuantity = 0
+        let avgBuy = 0
         if (checkTradeType(data.type) === BUY) {
           buyQuantity += data.quantity
           leftQuantity += data.quantity
+          avgBuy = data.price
         }
         else if (checkTradeType(data.type) === SELL) {
           leftQuantity -= data.quantity
@@ -42,7 +44,7 @@ const addStock = (data) => {
 
         const portfolio = new Portfolio({
           stockId: data.stockId,
-          avgBuy: data.price,
+          avgBuy: avgBuy,
           leftQuantity: leftQuantity,
           buyQuantity: buyQuantity,
           count: 1
@@ -190,8 +192,13 @@ const updatePortfolioOnModifyTrade = (prevTrade, tradePortfolio, newTrade) => {
   else {
     // changing trade type from BUY to SELL
     if (checkTradeType(type) === SELL) {
-      newPortfolio.avgBuy = ((tradePortfolio.buyQuantity * tradePortfolio.avgBuy) - (prevTrade.price * prevTrade.quantity))/(tradePortfolio.buyQuantity - prevTrade.quantity)
       newPortfolio.buyQuantity = tradePortfolio.buyQuantity - prevTrade.quantity
+      if (newPortfolio.buyQuantity === 0) {
+        newPortfolio.avgBuy = 0
+      }
+      else {
+        newPortfolio.avgBuy = ((tradePortfolio.buyQuantity * tradePortfolio.avgBuy) - (prevTrade.price * prevTrade.quantity))/(tradePortfolio.buyQuantity - prevTrade.quantity)
+      }
       newPortfolio.leftQuantity = tradePortfolio.leftQuantity - prevTrade.quantity - quantity
     }
     else {
@@ -216,15 +223,20 @@ const updatePortfolioOnDeleteTrade = (trade, tradePortfolio) => {
   newPortfolio.count = tradePortfolio.count - 1
   // if trade is of BUY type
   if (checkTradeType(trade.type) === BUY) {
-      newPortfolio.avgBuy = ((tradePortfolio.avgBuy * tradePortfolio.buyQuantity) - (trade.price * trade.quantity))/(tradePortfolio.buyQuantity - trade.quantity)
+      newPortfolio.buyQuantity = tradePortfolio.buyQuantity - trade.quantity
+      if (newPortfolio.buyQuantity === 0) {
+        newPortfolio.avgBuy = 0
+      }
+      // if all buy stocks have been removed
+      else {
+        newPortfolio.avgBuy = ((tradePortfolio.avgBuy * tradePortfolio.buyQuantity) - (trade.price * trade.quantity))/(tradePortfolio.buyQuantity - trade.quantity)
+      }
       newPortfolio.leftQuantity = tradePortfolio.leftQuantity - trade.quantity
-      newPortfolio.buyQuantity = tradePortfolio.leftQuantity - trade.quantity
   }
   // if Trade is of SELL type
   else {
     newPortfolio.leftQuantity = tradePortfolio.leftQuantity + trade.quantity
   }
-
   return new Promise ((resolve, reject) => {
     Portfolio.findOneAndUpdate({stockId: tradePortfolio.stockId}, newPortfolio, {new: true}).then((result) => {
       resolve()
